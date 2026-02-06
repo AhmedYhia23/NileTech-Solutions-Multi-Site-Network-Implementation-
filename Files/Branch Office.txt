@@ -1,0 +1,392 @@
+# Full configuration files and the complete Packet Tracer project are **not included**.
+# Full config files available upon request
+# Created by Ahmed Yhia
+# GitHub: https://github.com/AhmedYhia23/NileTech-Solutions-Multi-Site-Network-Implementation-
+# LinkedIn: www.linkedin.com/in/ahmed-yhia-fathy-b90291319
+------------------------------------------------------------------------
+
+Branch Office
+
+Eatherchannel ( LACP )
+ DSW-B1 & DSW-B2
+
+>en
+ #conf t
+  DSW-B1(config)#do sh cdp nei
+  DSW-B1(config)#int range g1/0/4-5
+  DSW-B1(config-if-range)#channel-group 1 mode active
+  DSW-B1(config-if-range)#do sh etherch sum
+
+________________________________________________________________
+
+trunk & native VLAN
+DSW-B1 & DSW-B2
+ 
+(config)#int rang g 1/0/1-3
+ (config-if-range)#sw mod trunk
+ (config-if-range)#sw noneg
+ (config-if-range)#sw nonegotiate 
+ (config-if-range)#sw trunk native vlan 1000
+ (config-if-range)#sw trunk allowed vlan 10,20,30,99
+
+(config-if-range)#int po1
+ (config-if)#sw mod trunk
+ (config-if)#sw nonegotiate 
+ (config-if)#sw trunk native vlan 1000
+ (config-if)#sw trunk allowed vlan 10,20,30,99
+
+ASW-B1 & ASW-B2 & ASW-B3
+
+ (config)#int rang g 0/1-2
+ (config-if-range)#sw mod trunk
+ (config-if-range)#sw nonegotiate 
+ (config-if-range)#sw trunk native vlan 1000
+ (config-if-range)#sw trunk allowed vlan 10,20,30,99
+
+___________________________________________________________________
+
+VTP
+DSW-A1
+
+ (config)#vtp domain myproject
+ (config)#vtp version 2
+ (config)#do sh vtp status
+
+
+ASW-A1 & ASW-A2 & ASW-A3
+
+ (config)#vtp mod client
+
+___________________________________________________________________
+
+ASW-B1 
+
+ (config)#int f0/1
+ (config-if)#sw mod acc
+ (config-if)#sw nonegotiate 
+ (config-if)#sw ac vlan 99
+
+
+ASW-B2 
+
+ (config)#int f0/1
+ (config-if)#sw mod acc
+ (config-if)#sw nonegotiate 
+ (config-if)#sw ac vlan 10
+ (config-if)#sw voice vlan 20
+
+
+ASW-B3
+
+ (config)#int f0/1
+ (config-if)#sw mod acc
+ (config-if)#sw nonegotiate
+ (config-if)#sw ac vlan 30
+
+______________________________________________________________________
+
+DSW-B1 & DSW-B2
+
+ (config)#int range g1/0/6-24,g1/1/3-4
+ (config-if-range)#shut
+
+
+ASW-B1 & ASW-B2 & ASW-B3
+ 
+ (config)#int range f0/2-24
+ (config-if-range)#shut
+
+__________________________________________________________________________
+
+DSW-B1 & DSW-B2
+
+ (config)#ip routing
+
+DSW-B1
+
+ (config)#int g1/1/1
+ (config-if)#no sw
+ (config-if)#ip add 10.0.0.54 255.255.255.252
+
+ (config)#int g1/1/2
+ (config-if)#no sw
+ (config-if)#ip add 10.0.0.70 255.255.255.252
+
+ (config)#int L0
+ (config-if)#ip add 10.0.0.81 255.255.255.255
+
+DSW-B2
+
+ (config)#int g1/1/1
+ (config-if)#no sw
+ (config-if)#ip add 10.0.0.58 255.255.255.252
+
+ (config)#int g1/1/2
+ (config-if)#no sw
+ (config-if)#ip add 10.0.0.74 255.255.255.252
+
+ (config)#int L0
+ (config-if)#ip add 10.0.0.82 255.255.255.255
+ 
+_________________________________________________________________________
+
+Interface VLAN 99
+
+ASW-B1
+
+ (config)#ip default-gateway 10.0.0.17
+ (config)#int vlan 99
+ (config-if)#ip add 10.0.0.20 255.255.255.240
+
+ASW-B2
+
+ (config)#ip default-gateway 10.0.0.17
+ (config)#int vlan 99
+ (config-if)#ip add 10.0.0.21 255.255.255.240
+
+ASW-B3
+
+ (config)#ip default-gateway 10.0.0.17
+ (config)#int vlan 99
+ (config-if)#ip add 10.0.0.22 255.255.255.240
+
+__________________________________________________________________________
+
+HSRPv2 group 1 for vlan99 (Management)
+
+DSW-B1
+
+ (config)#interface vlan 99
+  (config-if)#ip address 10.0.0.18 255.255.255.240
+  (config-if)#standby version 2
+  (config-if)#standby 1 ip 10.0.0.17
+  (config-if)#standby 1 priority 105
+  (config-if)#standby 1 preempt
+
+DSW-B2
+
+ (config)#interface vlan 99
+  (config-if)#ip address 10.0.0.19 255.255.255.240
+  (config-if)#standby version 2
+  (config-if)#standby 1 ip 10.0.0.17
+
+__________________________________________________________________________
+
+HSRPv2 group 2 for vlan10 (PC)
+
+DSW-B1
+
+ (config)#interface vlan 10
+  (config-if)#ip address 10.3.0.2 255.255.255.0
+  (config-if)#standby version 2
+  (config-if)#standby 2 ip 10.3.0.1
+  (config-if)#standby 2 priority 105
+  (config-if)#standby 2 preempt
+
+DSW-B2
+
+ (config)#interface vlan 10
+  (config-if)#ip address 10.3.0.3 255.255.255.0
+  (config-if)#standby version 2
+  (config-if)#standby 2 ip 10.3.0.1
+
+__________________________________________________________________________
+
+HSRPv2 group 3 for vlan20 (Phones)
+
+DSW-B2
+
+ (config)#interface vlan 20
+  (config-if)#ip address 10.4.0.3 255.255.255.0
+  (config-if)#standby version 2
+  (config-if)#standby 3 ip 10.4.0.1
+  (config-if)#standby 3 priority 105
+  (config-if)#standby 3 preempt
+
+DSW-B1
+
+ (config)#interface vlan 20
+  (config-if)#ip address 10.4.0.2 255.255.255.0
+  (config-if)#standby version 2
+  (config-if)#standby 3 ip 10.4.0.1
+
+__________________________________________________________________________
+
+HSRPv2 group 4 for vlan30 (Servers)
+
+DSW-B2
+
+ (config)#interface vlan 30
+  (config-if)#ip address 0.5.0.3 255.255.255.0
+  (config-if)#standby version 2
+  (config-if)#standby 4 ip 10.5.0.1
+  (config-if)#standby 4 priority 105
+  (config-if)#standby 4 preempt
+
+DSW-B1
+
+ (config)#interface vlan 30
+  (config-if)#ip address 10.5.0.2 255.255.255.0
+  (config-if)#standby version 2
+  (config-if)#standby 4 ip 10.5.0.1
+
+_____________________________________________________________________________
+
+PVST+
+
+DSW-B1 DSW-B2 ASW-B1 ASW-B2 ASW-B3
+
+ (config)#spanning-tree mode rapid-pvst
+
+DSW-B1
+
+ (config)#spanning-tree vlan 99,10 priority 0
+ (config)#spanning-tree vlan 20,30 priority 4096
+
+
+DSW-B2
+
+ (config)#spanning-tree vlan 20,30 priority 0
+ (config)#spanning-tree vlan 99,10 priority 4096
+
+_____________________________________________________________________________
+
+PortFast and BPDU Guard
+
+ASW-B1 ASW-B2 ASW-B3
+
+ (config)#int f0/1
+ (config-if)#spanning-tree portfast
+ (config-if)#spanning-tree bpduguard enable
+
+_____________________________________________________________________________
+
+Routing
+ 
+ DSW-B1
+
+
+  (config)#router ospf 1
+  (config-router)#router-id 10.0.0.81
+
+  (config-router)#passive-interface l0
+  (config-router)#passive-interface vlan 10
+  (config-router)#passive-interface vlan 20
+  (config-router)#passive-interface vlan 30
+
+  (config-router)#network 10.0.0.54 0.0.0.0 area 0
+  (config-router)#network 10.0.0.70 0.0.0.0 area 0
+  (config-router)#network 10.0.0.81 0.0.0.0 area 0
+  (config-router)#network 10.3.0.2 0.0.0.0 area 0
+  (config-router)#network 10.4.0.2 0.0.0.0 area 0
+  (config-router)#network 10.5.0.2 0.0.0.0 area 0
+  (config-router)#network 10.0.0.2 0.0.0.0 area 0
+
+  (config-router)#int range g1/1/1-2
+  (config-if-range)#ip ospf network point-to-point
+
+ 
+ DSW-B2
+
+  (config)#router ospf 1
+  (config-router)#router-id 10.0.0.82
+
+  (config-router)#passive-interface l0
+  (config-router)#passive-interface vlan 10
+  (config-router)#passive-interface vlan 20
+  (config-router)#passive-interface vlan 30
+
+  (config-router)#network 10.0.0.58 0.0.0.0 area 0
+  (config-router)#network 10.0.0.74 0.0.0.0 area 0
+  (config-router)#network 10.0.0.82 0.0.0.0 area 0
+  (config-router)#network 10.3.0.3 0.0.0.0 area 0
+  (config-router)#network 10.4.0.3 0.0.0.0 area 0
+  (config-router)#network 10.5.0.3 0.0.0.0 area 0
+  (config-router)#network 10.0.0.19 0.0.0.0 area 0
+
+  (config-router)#int range g1/1/1-2
+  (config-if-range)#ip ospf network point-to-point
+
+
+__________________________________________________________________
+
+DHCP
+
+DSW-A1 DSW-A2
+
+ (config)#interface vlan 10
+ (config-if)#ip helper-address 10.0.0.76
+ (config-if)#interface vlan 20
+ (config-if)#ip helper-address 10.0.0.76
+ (config-if)#interface vlan 30
+ (config-if)#ip helper-address 10.0.0.76
+ (config-if)#interface vlan 99
+ (config-if)#ip helper-address 10.0.0.76
+
+
+__________________________________________________________________
+
+Port-security
+ASW-A2 , ASW-A3 , ASW-B2
+
+ (config)#int f0/1
+ (config-if)#switchport port-security
+ (config-if)#switchport port-security maximum 2
+ (config-if)#switchport port-security violation restrict
+ (config-if)#switchport port-security mac-address sticky
+
+
+__________________________________________________________________
+
+DHCP Snooping
+ASW-B1, ASW-B2, ASW-B3
+
+ (config)#ip dhcp snooping
+ (config)#ip dhcp snooping vlan 10,20,30,99
+ (config)#no ip dhcp snooping information option
+ (config)#interface range g0/1-2
+ (config-if-range)#ip dhcp snooping trust
+ (config-if-range)#interface f0/1
+ (config-if)#ip dhcp snooping limit rate 15
+
+
+__________________________________________________________________
+
+DAI (Dynamic ARP Inspection)
+ASW-B1 , ASW-B2 , ASW-B3
+
+ (config)#ip arp inspection vlan 10,20,30,99
+ (config)#ip arp inspection validate src-mac dst-mac ip
+ (config)#int range g0/1-2
+ (config-if-range)#ip arp inspection trust
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

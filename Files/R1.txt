@@ -1,0 +1,195 @@
+# Full configuration files and the complete Packet Tracer project are **not included**.
+# Full config files available upon request
+# Created by Ahmed Yhia
+# GitHub: https://github.com/AhmedYhia23/NileTech-Solutions-Multi-Site-Network-Implementation-
+# LinkedIn: www.linkedin.com/in/ahmed-yhia-fathy-b90291319
+------------------------------------------------------------------------
+
+R1
+
+ (config)#int range g0/0/0,g0/1/0
+ (config-if-range)#ip add dhcp
+ (config-if-range)#no shut
+
+ (config-if)#int g0/0
+ (config-if)#ip add 10.0.0.33 255.255.255.252
+ (config-if)#no shut
+
+ (config-if-range)#int g0/1
+ (config-if)#ip add 10.0.0.37 255.255.255.252
+ (config-if)#no sh
+
+
+ (config-if)#int l0
+ (config-if)#ip add 10.0.0.76 255.255.255.255
+
+__________________________________________________________________
+
+Routing
+
+  (config)#router ospf 1
+  (config-router)#router-id 10.0.0.76
+  (config-router)#passive-interface l0
+  (config-router)#int l0
+  (config-if)#ip ospf 1 area 0
+  (config-if)#int range g0/0-1
+  (config-if-range)#ip ospf 1 area 0
+  (config-if-range)#ip ospf network point-to-point
+
+ (config)#ip route 0.0.0.0 0.0.0.0 203.0.113.1
+ (config)#ip route 0.0.0.0 0.0.0.0 203.0.113.5 2
+ (config)#router ospf 1
+ (config-router)#default-information originate
+
+__________________________________________________________________
+
+DHCP
+
+ (config)#ip dhcp excluded-address 10.0.0.1 10.0.0.10
+ (config)#ip dhcp excluded-address 10.0.0.17 10.0.0.26
+ (config)#ip dhcp excluded-address 10.1.0.1 10.1.0.10
+ (config)#ip dhcp excluded-address 10.2.0.1 10.2.0.10
+ (config)#ip dhcp excluded-address 10.3.0.1 10.3.0.10
+ (config)#ip dhcp excluded-address 10.4.0.1 10.4.0.10
+ (config)#ip dhcp excluded-address 10.6.0.1 10.6.0.10
+
+ (config)#ip dhcp pool A-Mgmt
+ (dhcp-config)# network 10.0.0.0 255.255.255.240
+ (dhcp-config)# default-router 10.0.0.1
+ (dhcp-config)# domain-name ahmedyhia.com
+ (dhcp-config)# dns-server 10.5.0.4
+ (dhcp-config)# option 43 ip 10.0.0.7
+
+ (config)#ip dhcp pool A-PC
+ (dhcp-config)# network 10.1.0.0 255.255.255.0
+ (dhcp-config)# default-router 10.1.0.1
+ (dhcp-config)# domain-name ahmedyhia.com
+ (dhcp-config)# dns-server 10.5.0.4
+
+ (config)#ip dhcp pool A-Phone
+ (dhcp-config)# network 10.2.0.0 255.255.255.0
+ (dhcp-config)# default-router 10.2.0.1
+ (dhcp-config)# domain-name ahmedyhia.com
+ (dhcp-config)# dns-server 10.5.0.4
+
+ (config)#ip dhcp pool B-Mgmt
+ (dhcp-config)# network 10.0.0.16 255.255.255.240
+ (dhcp-config)# default-router 10.0.0.17
+ (dhcp-config)# domain-name ahmedyhia.com
+ (dhcp-config)# dns-server 10.5.0.4
+ (dhcp-config)# option 43 ip 10.0.0.7
+
+ (config)#ip dhcp pool B-PC
+ (dhcp-config)# network 10.3.0.0 255.255.255.0
+ (dhcp-config)# default-router 10.3.0.1
+ (dhcp-config)# domain-name ahmedyhia.com
+ (dhcp-config)# dns-server 10.5.0.4
+
+ (config)#ip dhcp pool B-Phone
+ (dhcp-config)# network 10.4.0.0 255.255.255.0
+ (dhcp-config)# default-router 10.4.0.1
+ (dhcp-config)# domain-name ahmedyhia.com
+ (dhcp-config)# dns-server 10.5.0.4
+
+ (config)#ip dhcp pool Wi-Fi
+ (dhcp-config)# network 10.6.0.0 255.255.255.0
+ (dhcp-config)# default-router 10.6.0.1
+ (dhcp-config)# domain-name ahmedyhia.com
+ (dhcp-config)# dns-server 10.5.0.4
+
+
+__________________________________________________________________
+
+NTP
+
+ (config)#ntp master 5
+ (config)#ntp server 216.239.35.0
+ (config)#ntp authentication-key 1 md5 ccna
+ (config)#ntp trusted-key 1
+
+__________________________________________________________________
+
+FTP
+R1
+
+ (config)#ip ftp username cisco
+ (config)#ip ftp password cisco
+ (config)#do copy ftp flash
+     Address or name of remote host []? 10.5.0.4
+     Source filename []? c2900-universalk9-mz.SPA.155-3.M4a.bin
+ (config)#boot system flash:c2900-universalk9-mz.SPA.155-3.M4a.bin
+ (config)#do wr
+ (config)#do reload
+ R1#delete flash:c2900-universalk9-mz.SPA.151-4.M4.bin
+
+__________________________________________________________________
+
+SSH
+
+ (config)#crypto key generate rsa
+  4096
+ (config)#ip ssh version 2
+ (config)#access-list 1 permit 10.1.0.0 0.0.0.255
+ (config)#line vty 0 15
+ (config-line)#access-class 1 in
+ (config-line)#transport input ssh
+ (config-line)#login local
+ (config-line)#logging synchronous
+
+__________________________________________________________________
+
+NAT
+
+ (config)#ip nat inside source static 10.5.0.4 203.0.113.113
+ (config)# access-list 2 permit 10.1.0.0 0.0.0.255
+ (config)# access-list 2 permit 10.2.0.0 0.0.0.255
+ (config)# access-list 2 permit 10.3.0.0 0.0.0.255
+ (config)# access-list 2 permit 10.4.0.0 0.0.0.255
+ (config)# access-list 2 permit 10.6.0.0 0.0.0.255
+ (config)#ip nat pool POOL1 203.0.113.200 203.0.113.207 netmask 255.255.255.248
+ (config)# ip nat inside source list 2 pool POOL1 overload
+ (config)#int range g0/0/0,g0/1/0
+ (config-if-range)#ip nat outside
+ (config-if-range)#int range g0/0-1
+ (config-if-range)#ip nat inside
+
+ (config)# interface g0/0/0
+ (config-if)# shutdown
+ (config)# router ospf 1
+ (config-router)# no default-information originate
+ (config-router)# default-information originate
+ (config)# interface g0/0/0
+ (config-if)# no shutdown
+ (config)# router ospf 1
+ (config-router)# no default-information originate
+ (config-router)# default-information originate
+
+
+__________________________________________________________________
+
+ipv6 
+
+ (config)#ipv6 unicast-routing
+ (config)#int g0/0/0
+ (config-if)#ipv6 add 2001:db8:a::2/64
+ (config-if)#int g0/1/0
+ (config-if)#ipv6 add 2001:db8:b::2/64
+ (config)#int g0/0
+ (config-if)#ipv6 add 2001:db8:a1::/64 eui-64
+ (config-if)#int g0/1
+ (config-if)#ipv6 add 2001:db8:a2::/64 eui-64
+
+ (config)#ipv6 route ::/0 2001:db8:a::1
+ (config)#ipv6 route ::/0 g0/1/0 2001:db8:b::1 2
+
+
+
+
+
+
+
+
+
+
+
+
