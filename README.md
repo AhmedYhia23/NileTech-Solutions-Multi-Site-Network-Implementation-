@@ -8,6 +8,7 @@ I designed and implemented a *full Enterprise Network Infrastructure* simulating
 NileTech Solutions – A technology company operating across multiple sites, requiring a secure, highly available, and well-structured network.
 
 <img width="1402" height="559" alt="Topology" src="https://github.com/user-attachments/assets/4090fc1e-52c5-47f6-9274-cfae12493f31" />
+
 ---
 
 
