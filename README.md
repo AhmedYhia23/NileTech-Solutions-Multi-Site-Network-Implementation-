@@ -4,8 +4,9 @@ Enterprise multi-site network design for a simulated company (HQ &amp; Branch) i
 
 I designed and implemented a *full Enterprise Network Infrastructure* simulating a real-world company with a *Headquarters (HQ)* and a *Branch Office, following industry best practices for **scalability, redundancy, security, and wireless mobility*.
 
-🏢 *Company Scenario:*
+###🏢 *Company Scenario:*
 NileTech Solutions – A technology company operating across multiple sites, requiring a secure, highly available, and well-structured network.
+
 <img width="1402" height="559" alt="Topology" src="https://github.com/user-attachments/assets/4090fc1e-52c5-47f6-9274-cfae12493f31" />
 ---
 
